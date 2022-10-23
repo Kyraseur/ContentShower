@@ -1,0 +1,221 @@
+{{> header.html}}
+
+<div class="h-100 d-flex align-items-center justify-content-center">
+  <div class="container">
+    <div class="alert alert-danger" id="msg_null" role="alert">
+      <strong>Błąd!</strong> Nie wypełniono wszystkich pól.
+    </div>
+    <div class="alert alert-danger" id="msg_name" role="alert">
+      <strong>Błąd!</strong> Podano niepoprawne imię.
+    </div>
+    <div class="alert alert-danger" id="msg_surname" role="alert">
+      <strong>Błąd!</strong> Podano niepoprawne nazwisko.
+    </div>
+    <div class="alert alert-danger" id="msg_phone" role="alert">
+      <strong>Błąd!</strong> Podano niepoprawny numer telefonu.
+    </div>
+    <div class="alert alert-danger" id="msg_email" role="alert">
+      <strong>Błąd!</strong> Podano niepoprawny adres email.
+    </div>
+    <div class="alert alert-danger" id="msg_age" role="alert">
+      <strong>Błąd!</strong> Podano niepoprawny wiek.
+    </div>
+    <div class="alert alert-success" id="msg_ok" role="alert">
+      <strong>Wow!</strong> Twoje konto zostało utworzone.
+    </div>
+    <div class="alert alert-info" id="msg_18_yes" role="alert">
+      <strong>Super!</strong> Jesteś użytkownikiem pełnoletnim.
+    </div>
+    <div class="alert alert-danger" id="msg_18_no" role="alert">
+      <strong>Niestety!</strong> Nie jesteś użytkownikiem pełnoletnim.
+    </div>
+
+    <form id="form">
+      <div class="row mb-4">
+        <div class="col">
+          <div class="form-outline">
+            <input type="text" class="form-control" id="name" />
+            <label class="form-label" for="name">Imię</label>
+            <input type="text" class="form-control" id="surname" />
+            <label class="form-label" for="surname">Nazwisko</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-outline mb-4">
+        <input type="text" class="form-control" id="city" />
+        <label class="form-label" for="city">Miejsce zamieszkania</label>
+      </div>
+      <div class="form-outline mb-4">
+        <input type="text" class="form-control" id="phone" />
+        <label class="form-label" for="phone">Numer telefonu</label>
+      </div>
+      <div class="form-outline mb-4">
+        <input type="text" class="form-control" id="mail" />
+        <label class="form-label" for="mail">Adres mailowy</label>
+      </div>
+      <div class="form-outline mb-4">
+        <input type="text" class="form-control" id="birth" />
+        <label class="form-label" for="birth">Rok urodzenia</label>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block mb-4">
+        Wyślij
+      </button>
+    </form>
+  </div>
+</div>
+<script>
+  function isEmail(email) {
+    let valid = /^\b[A-Z0-9.-]+@[A-Z0-9.-]+\.[A-Z]{2,8}\b$/i;
+    if (!valid.test(email)) {
+      return false;
+    }
+    return true;
+  }
+  function isPhone(phone) {
+    let valid = /^[0-9]{9}$/i;
+
+    if (!valid.test(phone)) {
+      return false;
+    }
+    return true;
+  }
+  function isName(name) {
+    let valid = /^[a-zA-Z-\s]*$/;
+
+    if (!valid.test(name)) {
+      return false;
+    }
+    return true;
+  }
+  function isUnderage(year) {
+    if (new Date().getFullYear() - year >= 18) {
+      return true;
+    }
+    return false;
+  }
+  function isFilled() {
+    if ($("#name").val() == "") {
+      return "#name";
+    }
+    if ($("#surname").val() == "") {
+      return "#surname";
+    }
+    if ($("#city").val() == "") {
+      return "#city";
+    }
+    if ($("#birth").val() == "") {
+      return "#birth";
+    }
+    if ($("#mail").val() == "") {
+      return "#mail";
+    }
+    if ($("#phone").val() == "") {
+      return "#phone";
+    }
+
+    return "";
+  }
+  function hideMsgAlerts() {
+    $(".alert").each((index, el) => {
+      $(el).hide();
+    });
+  }
+
+  $(document).ready(function () {
+    hideMsgAlerts();
+
+    $("#form").submit(function (event) {
+      event.preventDefault();
+      hideMsgAlerts();
+      let createAccount = true;
+      let focus = "";
+
+      if (isFilled() === "") {
+        $("#msg_null").hide();
+
+        if (!isName($("#name").val())) {
+          $("#msg_name").show();
+          createAccount = false;
+          if (focus === "") {
+            focus = "#name";
+          }
+          //$("#name").focus();
+        }
+
+        if (!isName($("#surname").val())) {
+          $("#msg_surname").show();
+          createAccount = false;
+          if (focus === "") {
+            focus = "#surname";
+          }
+          //$("#surname").focus();
+        }
+
+        if (!isPhone($("#phone").val())) {
+          $("#msg_phone").show();
+          createAccount = false;
+          if (focus === "") {
+            focus = "#phone";
+          }
+          //$("#phone").focus();
+        }
+
+        if (!isEmail($("#mail").val())) {
+          $("#msg_email").show();
+          createAccount = false;
+          if (focus === "") {
+            focus = "#email";
+          }
+          //$("#email").focus();
+        }
+
+        if (isNaN(parseInt($("#birth").val()))) {
+          $("#msg_age").show();
+          createAccount = false;
+          if (focus === "") {
+            focus = "#birth";
+          }
+          //$("#birth").focus();
+        } else {
+          if (parseInt($("#birth").val()) > 1900) {
+            if (isUnderage($("#birth").val())) {
+              $("#msg_18_yes").show();
+            } else {
+              $("#msg_18_no").show();
+              createAccount = false;
+              if (focus === "") {
+                focus = "#birth";
+              }
+              //$("#birth").focus();
+            }
+          } else {
+            $("#msg_age").show();
+            createAccount = false;
+            if (focus === "") {
+              focus = "#birth";
+            }
+            $(focus).focus();
+            //$("#birth").focus();
+          }
+        }
+      } else {
+        $("#msg_null").show();
+        createAccount = false;
+        if (focus === "") {
+          focus = isFilled();
+        }
+        //$("#birth").focus();
+      }
+      if (focus !== "") {
+        $(focus).focus();
+      }
+      if (createAccount) {
+        $("#msg_ok").show();
+      }
+    });
+  });
+</script>
+
+{{> footer.html}}
